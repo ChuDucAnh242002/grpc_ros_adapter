@@ -39,8 +39,16 @@ def vector_as_msg(self):
     ret.x, ret.y, ret.z = v[0], v[1], v[2]
     return ret
 
-@add_method(geometry.Vector3, "as_ros")
+@add_method(Vector3, "as_ros")
 def vector_as_ros(self):
+    v = np.array([self.x, self.y, self.z , 1])
+    print(self.x)
+    print(self.y)
+    print(self.z)
+    return Vector3(v[0], v[1], v[2])
+
+@add_method(geometry.Vector3, "as_ros")
+def vector_geometry_as_ros(self):
     v = np.array([self.x, self.y, self.z , 1])
     # v = _UNITY_TO_ROS_TRANSFORM.dot(v)
     return Vector3(v[0], v[1], v[2])
@@ -51,8 +59,12 @@ def quaternion_as_msg(self):
     ret.x, ret.y, ret.z, ret.w = self.x, self.y, self.z, self.w
     return ret
 
-@add_method(geometry.Quaternion, "as_ros")
+@add_method(Quaternion, "as_ros")
 def quaternion_as_ros(self):
+    return Quaternion(self.x, self.y, self.z, self.w)
+
+@add_method(geometry.Quaternion, "as_ros")
+def quaternion_geometry_as_ros(self):
     return Quaternion(self.x, self.y, self.z, self.w)
 
 @add_method(geometry.Point, "as_ros")

@@ -167,6 +167,7 @@ def publish_ais(request, context):
     report.type = request.aisPositionReport.type
     report.mmsi = request.aisPositionReport.mmsi
     report.heading = request.aisPositionReport.heading
+    report.timestamp = request.aisPositionReport.timestamp
     point = NavSatFix()
     point.latitude = request.aisPositionReport.geopoint.latitude
     point.longitude = request.aisPositionReport.geopoint.longitude

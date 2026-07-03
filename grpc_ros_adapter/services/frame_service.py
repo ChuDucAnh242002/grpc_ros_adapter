@@ -1,5 +1,6 @@
 
 import time
+import numpy as np
 
 from protobuf import tf_pb2_grpc
 from protobuf import tf_pb2
@@ -8,7 +9,7 @@ import utils.ros_handle as rh
 import utils.extensions
 from tf2_msgs.msg import TFMessage
 from threading import Lock
-from geometry_msgs.msg import TransformStamped, Transform
+from geometry_msgs.msg import TransformStamped, Transform, Vector3, Quaternion
 
 class FrameService(tf_pb2_grpc.TfServicer):
 
@@ -103,8 +104,12 @@ class FrameService(tf_pb2_grpc.TfServicer):
             frame.header.frame_id = request.frameId
             frame.child_frame_id = request.childFrameId
             frame.transform = Transform()
-            frame.transform.translation = request.translation.as_ros()
-            frame.transform.rotation = request.rotation.as_ros()
+            # frame.transform.translation = request.translation.as_ros()
+            # frame.transform.rotation = request.rotation.as_ros()
+            v1 = np.array([request.translation.x, request.translation.y, request.translation.z , 1])
+            v2 = np.array([request.rotation.x, request.rotation.y, request.rotation.z, request.rotation.w])
+            frame.transform.translation = Vector3(v1[0], v1[1], v1[2])
+            frame.transform.rotation = Quaternion(v2[0], v2[1], v2[2], v2[3])
 
             from utils.ros_publisher_registry import RosPublisherRegistry
 
