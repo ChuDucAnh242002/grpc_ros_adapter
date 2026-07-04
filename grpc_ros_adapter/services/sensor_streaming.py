@@ -3,6 +3,8 @@ from protobuf.sensor_pb2 import PointCloud2
 from protobuf import sensor_streaming_pb2
 from protobuf import sensor_streaming_pb2_grpc
 from utils import topic_streamer
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 class Context:
     pass
@@ -13,6 +15,7 @@ class SensorStreaming(sensor_streaming_pb2_grpc.SensorStreamingServicer):
         self.publishers = {}
         self._callbacks = callbacks
         self._callback_contexts = {}
+        self._executor = ThreadPoolExecutor(max_workers=4)
 
 
     def _get_callback_context(self, callback):
@@ -27,7 +30,9 @@ class SensorStreaming(sensor_streaming_pb2_grpc.SensorStreamingServicer):
         callbacks = self._callbacks.get(service_function.__name__, [])
         for c in callbacks:
             context = self._get_callback_context(c)
-            c(request, context)
+            
+            # Submit to thread pool - doesn't block
+            self._executor.submit(c, request, context)
 
 
 

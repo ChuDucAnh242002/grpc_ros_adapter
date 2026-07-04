@@ -30,17 +30,24 @@ def publish_image(request, context):
 
         msg = Image()
         header = Header()
+        # RGB
+        # msg = self.bridge.cv2_to_imgmsg(cv_image, 'rgb8')
         try:
-            # RGB
-            # msg = self.bridge.cv2_to_imgmsg(cv_image, 'rgb8')
+            msg.height = bgr_image.shape[0]
+            msg.width = bgr_image.shape[1]
+            msg.encoding = "bgr8"
+            msg.is_bigendian = False
+            msg.step = msg.width * 3
+            msg.data = bgr_image.tobytes()
+        except Exception as e3:
+            return
 
-            # BGR
-            msg = context.bridge.cv2_to_imgmsg(bgr_image, 'bgr8')
-
+        # Set header
+        try:
             header.stamp = rh.Time.from_sec(request.image.header.timestamp)
             header.frame_id = request.image.header.frameId
             msg.header = header
-        except CvBridgeError as e:
+        except Exception as e:
             print(e)
 
         pub = RosPublisherRegistry.get_publisher(request.address.lower(), Image)
